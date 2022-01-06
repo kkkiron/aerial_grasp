@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find dji_sdk)/launch/sdk.launch"> </include>
+    <include file="$(find linear_mpc)/launch/go_to_set_point.launch"> </include>
+    <node name="Armtest_node" pkg = "Armtest" type = "Armtest_node"> </node>
+    <node name="opti_odom" pkg = "bebop_odom" type = "opti_odom.py"> </node>
+    <node name="auxiliary" pkg = "auxiliary" type = "auxiliary"> </node>
+</launch>

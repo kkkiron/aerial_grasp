@@ -1,0 +1,63 @@
+<launch>
+
+    <arg name="mav_name" default="crazyflie2" />
+    <arg name="server" default="172.16.6.124"/>
+    <arg name="uri" default="radio://0/80/2M" />
+    <arg name="tf_prefix" default="" />
+    <arg name="roll_trim" default="0" />
+    <arg name="pitch_trim" default="0" />
+    <arg name="enable_logging" default="True" />
+    <arg name="use_ros_time" default="True" />
+    <arg name="enable_logging_imu" default="True" />
+    <arg name="enable_logging_temperature" default="True" />
+    <arg name="enable_logging_magnetic_field" default="True" />
+    <arg name="enable_logging_pressure" default="True" />
+    <arg name="enable_logging_battery" default="True" />
+    <arg name="enable_logging_pose" default="False" />
+    <arg name="enable_logging_packets" default="True" />
+
+    <node pkg="crazyflie_driver" type="crazyflie_server" name="crazyflie_server" output="screen" />
+    
+    <node pkg="crazyflie_driver" type="crazyflie_add" name="crazyflie_add" output="screen">
+        <param name="uri" value="$(arg uri)" />
+        <param name="tf_prefix" value="$(arg tf_prefix)" />
+        <param name="roll_trim" value="$(arg roll_trim)" />
+        <param name="pitch_trim" value="$(arg pitch_trim)" />
+        <param name="enable_logging" value="$(arg enable_logging)" />
+        <param name="use_ros_time" value="$(arg use_ros_time)" />
+        <param name="enable_logging_imu" value="$(arg enable_logging_imu)" />
+        <param name="enable_logging_temperature" value="$(arg enable_logging_temperature)" />
+        <param name="enable_logging_magnetic_field" value="$(arg enable_logging_magnetic_field)" />
+        <param name="enable_logging_pressure" value="$(arg enable_logging_pressure)" />
+        <param name="enable_logging_battery" value="$(arg enable_logging_battery)" />
+        <param name="enable_logging_pose" value="$(arg enable_logging_pose)" />
+        <param name="enable_logging_packets" value="$(arg enable_logging_packets)"/>
+    </node>
+
+    <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
+        <rosparam subst_value="true">
+            server: $(arg server)
+            port: 3883
+
+            update_frequency: 100.0
+            frame_id: world
+
+            # Use the VRPN server's time, or the client's ROS time.
+            use_server_time: false
+            broadcast_tf: true
+
+            # Must either specify refresh frequency > 0.0, or a list of trackers to create
+            refresh_tracker_frequency: 1.0
+            #trackers:
+            #- FirstTracker
+            #- SecondTracker
+        </rosparam>
+    </node>   
+
+    <node pkg="linear_mpc" type="linear_mpc_node" name="linear_mpc_node" output="screen">
+        <remap from="/pose" to="/vrpn_client_node/RigidBody01/pose" />
+        <rosparam file="$(find linear_mpc)/resources/linear_mpc_$(arg mav_name).yaml"/>
+        <param name="verbose" value="true" />
+    </node>
+
+</launch>

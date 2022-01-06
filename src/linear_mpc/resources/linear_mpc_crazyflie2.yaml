@@ -1,0 +1,7 @@
+mass: 3.30
+drag_coefficients: [0.0, 0.0, 0.0]
+
+sampling_time: 0.0067    #IMPORTANT: set this equal to the rate of odometry msg
+prediction_sampling_time: 0.05
+
+publish_time: 0.01

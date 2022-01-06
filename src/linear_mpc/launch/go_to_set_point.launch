@@ -1,0 +1,10 @@
+<launch>
+    <arg name="mav_name" default="crazyflie2" />
+
+    <node pkg="linear_mpc" type="linear_mpc_node" name="linear_mpc_node" output="screen">
+        <remap from="/pose" to="/vrpn_client_node/RigidBody01/pose" />
+        <rosparam file="$(find linear_mpc)/resources/linear_mpc_$(arg mav_name).yaml"/>
+        <param name="verbose" value="true" />
+    </node>
+
+</launch>

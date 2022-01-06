@@ -1,0 +1,38 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/dji/czj_demo/catkin_ws/devel/include/**",
+                "/home/dji/tfes/devel/include/**",
+                "/opt/ros/kinetic/include/**",
+                "/home/dji/czj_demo/catkin_ws/src/ball_releasing/include/**",
+                "/home/dji/tfes/src/Btraj/include/**",
+                "/home/dji/tfes/src/planner/bspline_opt/include/**",
+                "/home/dji/tfes/src/VINS-Fusion/camera_models/include/**",
+                "/home/dji/czj_demo/catkin_ws/src/Onboard-SDK-ROS/dji_sdk/include/**",
+                "/home/dji/czj_demo/catkin_ws/src/Onboard-SDK-ROS/dji_sdk_demo/include/**",
+                "/home/dji/tfes/src/controller/djiros/include/**",
+                "/home/dji/tfes/src/planner/plan_manage/include/**",
+                "/home/dji/tfes/src/uav_simulator/mockamap/include/**",
+                "/home/dji/tfes/src/uav_simulator/Utils/multi_map_server/include/**",
+                "/home/dji/tfes/src/planner/path_searching/include/**",
+                "/home/dji/tfes/src/planner/plan_env/include/**",
+                "/home/dji/tfes/src/uav_simulator/Utils/pose_utils/include/**",
+                "/home/dji/tfes/src/uav_simulator/Utils/quadrotor_msgs/include/**",
+                "/home/dji/tfes/src/realsense2_camera/include/**",
+                "/home/dji/tfes/src/uav_simulator/so3_control/include/**",
+                "/home/dji/tfes/src/uav_simulator/so3_quadrotor_simulator/include/**",
+                "/home/dji/tfes/src/planner/traj_utils/include/**",
+                "/home/dji/tfes/src/uav_simulator/Utils/uav_utils/include/**",
+                "/usr/include/**"
+            ],
+            "name": "ROS",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
