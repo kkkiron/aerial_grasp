@@ -14,10 +14,6 @@
 flight_control::FlightControlNode::FlightControlNode(ros::NodeHandle &n)
 {
 
-    FlightStatus = 255;
-
-    DisplayMode = 255;
-
     this->InitSubcribers(n);
 
     this->InitPublishers(n);
@@ -36,7 +32,7 @@ void flight_control::FlightControlNode::InitSubcribers(ros::NodeHandle &n)
 
     MpcOutPutSubscriber = n.subscribe<mav_msgs::RollPitchYawrateThrust>("/cmd_attitude_thrust", 10, &flight_control::FlightControlNode::GetMpcOutPutCallBack, this);
 
-    ThrustCmdSubscriber = n.subscribe<arm_test::gripper>("gripper",10,&flight_control::FlightControlNode::GetThrustCmdCallBack,this);
+    // ThrustCmdSubscriber = n.subscribe<arm_test::gripper>("gripper",10,&flight_control::FlightControlNode::GetThrustCmdCallBack,this);
 
     DroneArmControlSubscriber = n.subscribe<arm_test::controls>("controls",10,&flight_control::FlightControlNode::GetArmControlCallBack,this);
 }
@@ -85,11 +81,7 @@ void flight_control::FlightControlNode::FlightControlThread()
         ROS_ERROR("Cannot obtain control");
         return ;
     }
-    // bool isTakeoff = MonitoredTakeoff();
-    // if(!isTakeoff){
-    //     ROS_ERROR("Cannot Takeoff");
 
-    // }
     ROS_INFO("Control Start");
 
     //control
@@ -97,16 +89,20 @@ void flight_control::FlightControlNode::FlightControlThread()
 
     while (ros::ok())
     {
-
-        float roll   = u[0] - u_compensate;
-        float pitch  = u[1];
-        float yaw    = u[2];
-        float thrust = u[3] / (3.3 * (9.81 + 20)) * 100;
-        std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
-        // std::cout << "     u_compensate:"  << u_compensate <<  std::endl;
-        // std::cout << "     u[o]:"  << u[0] << "     roll:"  << roll << std::endl;
-        //float thrust = my_thrust;
-        //std::cout << "my_thrust: " <<thrust << std::endl;
+        CmdFliter();
+        if(!is_flitered_) {
+            continue;
+        }
+        float roll   = u_[0] - u_compensate;
+        float pitch  = u_[1];
+        float yaw    = u_[2];
+        float thrust = u_[3] / (3.3 * (9.81 + 20)) * 100;
+        static int counter = 0;
+        if(counter == 100) {
+            std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
+            counter = 0;
+        }
+        counter++;
 
         sensor_msgs::Joy controlVelYawRate;
         uint8_t flag = (DJISDK::VERTICAL_THRUST |
@@ -126,95 +122,12 @@ void flight_control::FlightControlNode::FlightControlThread()
         //std::cout << "localPoint.y: " << localPoint.y << "     " << "localPoint.x: " << localPoint.x  << std::endl;
         // x[3] = HorizontalVelocity.y; x[4] = HorizontalVelocity.x; x[5] = HorizontalVelocity.z;
         // xRef[0] = RefPoint[0];       xRef[1] = RefPoint[1];       xRef[2] = RefPoint[2];
-        u_past[0] = u[0];
-        u_past[1] = u[1];
         LoopRate.sleep();
     }
     if (TakeoffLand(dji_sdk::DroneTaskControl::Request::TASK_LAND))
         ROS_INFO("Landing success");
 }
 
-
-bool flight_control::FlightControlNode::MonitoredTakeoff()
-{
-
-    ros::Time start_time = ros::Time::now();
-
-    if (!TakeoffLand(dji_sdk::DroneTaskControl::Request::TASK_TAKEOFF))
-    {
-        return false;
-    }
-
-    ros::Duration(0.01).sleep();
-    ros::spinOnce();
-
-    // Step 1.1: Spin the motor
-    while (FlightStatus != DJISDK::FlightStatus::STATUS_ON_GROUND &&
-           DisplayMode != DJISDK::DisplayMode::MODE_ENGINE_START &&
-           ros::Time::now() - start_time < ros::Duration(3))
-    {
-        ros::Duration(0.01).sleep();
-        ros::spinOnce();
-    }
-
-    if (ros::Time::now() - start_time > ros::Duration(4))
-    {
-        ROS_ERROR("Takeoff failed. Motors are not spinnning.");
-        return false;
-    }
-    else
-    {
-        start_time = ros::Time::now();
-        ROS_INFO("Motor Spinning ...");
-        ros::spinOnce();
-    }
-
-    // Step 1.2: Get in to the air
-    while (FlightStatus != DJISDK::FlightStatus::STATUS_IN_AIR &&
-           (DisplayMode != DJISDK::DisplayMode::MODE_ASSISTED_TAKEOFF || DisplayMode != DJISDK::DisplayMode::MODE_AUTO_TAKEOFF) &&
-           ros::Time::now() - start_time < ros::Duration(2))
-    {
-        ros::Duration(0.01).sleep();
-        ros::spinOnce();
-    }
-
-    if (ros::Time::now() - start_time > ros::Duration(3))
-    {
-
-
-
-        
-        ROS_ERROR("Takeoff failed. Aircraft is still on the ground, but the motors are spinning.");
-        return false;
-    }
-    else
-    {
-        start_time = ros::Time::now();
-        ROS_INFO("Ascending...");
-        ros::spinOnce();
-    }
-
-    // Final check: Finished takeoff
-    while ((DisplayMode == DJISDK::DisplayMode::MODE_ASSISTED_TAKEOFF || DisplayMode == DJISDK::DisplayMode::MODE_AUTO_TAKEOFF) &&
-           ros::Time::now() - start_time < ros::Duration(2))
-    {
-        ros::Duration(0.01).sleep();
-        ros::spinOnce();
-    }
-
-    if (DisplayMode != DJISDK::DisplayMode::MODE_P_GPS || DisplayMode != DJISDK::DisplayMode::MODE_ATTITUDE)
-    {
-        ROS_INFO("Successful takeoff!");
-        start_time = ros::Time::now();
-    }
-    else
-    {
-        ROS_ERROR("Takeoff finished, but the aircraft is in an unexpected mode. Please connect DJI GO.");
-        return false;
-    }
-
-    return true;
-}
 
 bool flight_control::FlightControlNode::ObtainControl()
 {
@@ -284,34 +197,35 @@ bool flight_control::FlightControlNode::set_arm(int arm)
 
 void flight_control::FlightControlNode::GetRefPositionCallBack(const flight_control::point::ConstPtr &msg)
 {
-    RefPoint = msg->point;
+    RefPoint_ = msg->point;
 }
 
 
 void flight_control::FlightControlNode::GetMpcOutPutCallBack(const mav_msgs::RollPitchYawrateThrust::ConstPtr &msg)
 {
-    this->u[0] = msg->roll;
-    this->u[1] = msg->pitch;
-    this->u[2] = 0; //yaw = 0
-    this->u[3] = msg->thrust.z;
+    this->temp_u_[0] = msg->roll;
+    this->temp_u_[1] = msg->pitch;
+    this->temp_u_[2] = 0; //yaw = 0
+    this->temp_u_[3] = msg->thrust.z;
+    is_recepted_ = true;
 }
 
-void flight_control::FlightControlNode::GetThrustCmdCallBack(const arm_test::gripper::ConstPtr &msg)
-{
-    if(msg->GripSta==0x00) 
-    {
-        this->my_thrust++;
-        //std::cout << "++" << std::endl;
-        //std::cout << "my_thrust: " << my_thrust << std::endl;
-    }
+// void flight_control::FlightControlNode::GetThrustCmdCallBack(const arm_test::gripper::ConstPtr &msg)
+// {
+//     if(msg->GripSta==0x00) 
+//     {
+//         this->my_thrust++;
+//         //std::cout << "++" << std::endl;
+//         //std::cout << "my_thrust: " << my_thrust << std::endl;
+//     }
 
-    if(msg->GripSta==0x01) 
-    {
-        this->my_thrust--;
-        //std::cout << "--" << std::endl;
-        //std::cout << "my_thrust: " << my_thrust << std::endl;
-    }
-}
+//     if(msg->GripSta==0x01) 
+//     {
+//         this->my_thrust--;
+//         //std::cout << "--" << std::endl;
+//         //std::cout << "my_thrust: " << my_thrust << std::endl;
+//     }
+// }
 
 void flight_control::FlightControlNode::GetArmControlCallBack(const arm_test::controls::ConstPtr &msg)
 {
@@ -350,3 +264,66 @@ void flight_control::FlightControlNode::GetArmControlCallBack(const arm_test::co
     }
 }
 
+void flight_control::FlightControlNode::FindMinMax(const std::vector<float>& nums) 
+{
+    float max = FLT_MIN;
+    float min = FLT_MAX;
+    for(int i=0; i<nums.size(); i++) {
+        if(nums[i] < min) {
+            min_index_ = i;
+            min = nums[i];
+        }
+        if(nums[i] > max) {
+            max_index_ = i;
+            max = nums[i];
+        }
+    }
+}
+
+float flight_control::FlightControlNode::Weighting(const std::vector<float>& nums) {
+    float res = 0;
+    int j = 0;
+    for(int i=0; i<nums.size(); i++){
+        if(i == max_index_ || i == min_index_ ){
+            continue;
+        }
+        res += nums[i] * gaussian_param_[j];
+        j++;
+    }
+    return res;
+}
+
+void flight_control::FlightControlNode::Update(std::vector<float>& nums, float new_data) {
+    nums.erase(nums.begin());
+    nums.push_back(new_data);
+}
+
+void flight_control::FlightControlNode::Process(std::vector<float>& nums, float new_data, float& res) {
+    FindMinMax(nums);
+    res =  Weighting(nums);
+    Update(nums, new_data);
+}
+
+void flight_control::FlightControlNode::CmdFliter() 
+{
+    if(is_recepted_) {
+        if(cmd_roll_vector_.size() < window_size_) {
+            cmd_roll_vector_.push_back(temp_u_[0]);
+            cmd_pitch_vector_.push_back(temp_u_[1]);
+            cmd_thrust_vector_.push_back(temp_u_[3]);
+            
+        }
+
+        else{
+            Process(cmd_roll_vector_, temp_u_[0], u_[0]);
+            Process(cmd_pitch_vector_, temp_u_[1], u_[1]);
+            Process(cmd_thrust_vector_, temp_u_[3], u_[3]);
+            is_flitered_ = true;
+        }
+        is_recepted_ = false;
+    }
+
+    else {
+
+    }
+}
