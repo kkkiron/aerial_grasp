@@ -88,7 +88,7 @@ private:
     // cmdfliter
     bool is_recepted_ = false;
     bool is_flitered_ = false;
-    const int window_size_ = 5;
+    const int window_size_ = 8;
     int max_index_ = 0, min_index_ = 0; 
     void CmdFliter();
     std::vector<float> gaussian_param_3 = {0.043, 0.2718, 0.6826};

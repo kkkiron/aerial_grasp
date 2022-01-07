@@ -98,7 +98,7 @@ void flight_control::FlightControlNode::FlightControlThread()
         float yaw    = u_[2];
         float thrust = u_[3] / (3.3 * (9.81 + 20)) * 100;
         static int counter = 0;
-        if(counter == 100) {
+        if(counter == 50) {
             std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
             counter = 0;
         }
@@ -287,7 +287,7 @@ float flight_control::FlightControlNode::Weighting(const std::vector<float>& num
         if(i == max_index_ || i == min_index_ ){
             continue;
         }
-        res += nums[i] * gaussian_param_[j];
+        res += nums[i] * gaussian_param_6[j];
         j++;
     }
     return res;
