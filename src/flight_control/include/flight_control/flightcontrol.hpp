@@ -88,10 +88,10 @@ private:
     // cmdfliter
     bool is_recepted_ = false;
     bool is_flitered_ = false;
-    const int window_size_ = 8;
+    const int window_size_ = 5;
     int max_index_ = 0, min_index_ = 0; 
     void CmdFliter();
-    std::vector<float> gaussian_param_ = {0.0098, 0.0332, 0.088, 0.1838, 0.2996, 0.383};
+    std::vector<float> gaussian_param_ = {0.043, 0.2718, 0.6826};
     std::vector<float> cmd_roll_vector_;
     std::vector<float> cmd_pitch_vector_;
     std::vector<float> cmd_thrust_vector_;
