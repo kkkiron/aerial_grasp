@@ -47,20 +47,30 @@ LinearModelPredictiveController::LinearModelPredictiveController(
     f = boost::bind(&LinearModelPredictiveController::DynConfigCallback, this, _1, _2);
     dyn_config_server_.setCallback(f);
 
-    pose_sub_ = nh_.subscribe(
-        "/agent/opti_odom", 1, &LinearModelPredictiveController::poseCallback, this);
+    pose_sub_ = 
+        nh_.subscribe("/agent/opti_odom", 
+                      10, &LinearModelPredictiveController::poseCallback, 
+                      this);
 
-    positon_sub_ = nh_.subscribe(
-        "/position", 1, &LinearModelPredictiveController::positionCallback, this);
+    positon_sub_ = 
+        nh_.subscribe("/position", 
+                      1, 
+                      &LinearModelPredictiveController::positionCallback,
+                      this);
 
-    track_sub_ = nh_.subscribe(
-        "/track", 1, &LinearModelPredictiveController::trackCallback, this);
+    track_sub_ = 
+        nh_.subscribe("/track", 
+                      1, 
+                      &LinearModelPredictiveController::trackCallback, 
+                      this);
 
-    cmd_roll_pitch_yawrate_thrust_pub_ = nh_.advertise<mav_msgs::RollPitchYawrateThrust>(
-        "/cmd_attitude_thrust", 1);
+    cmd_roll_pitch_yawrate_thrust_pub_ = 
+        nh_.advertise<mav_msgs::RollPitchYawrateThrust>("/cmd_attitude_thrust", 1);
 
-    set_pose_server_ = nh_.advertiseService(
-        "/set_pose", &LinearModelPredictiveController::setPose, this);
+    set_pose_server_ = 
+        nh_.advertiseService("/set_pose",
+                             &LinearModelPredictiveController::setPose, 
+                             this);
 
     // set_pose_client_ = nh_.serviceClient<linear_mpc::SetPose>("/set_pose");
     // linear_mpc::SetPose srv;

@@ -56,11 +56,11 @@ private:
     ros::ServiceClient SetLocalPositionRefService;
     ros::ServiceClient DroneArmControlService;
 
-    void GetLocalPositionCallBack(const geometry_msgs::PointStamped::ConstPtr& msg);
-    void GetRefPositionCallBack(const flight_control::point::ConstPtr& msg);
-    void GetMpcOutPutCallBack(const mav_msgs::RollPitchYawrateThrust::ConstPtr& msg);
+    void local_positionCallBack(const geometry_msgs::PointStamped::ConstPtr& msg);
+    void ref_positionCallBack(const flight_control::point::ConstPtr& msg);
+    void mpc_outputCallBack(const mav_msgs::RollPitchYawrateThrust::ConstPtr& msg);
     // void GetThrustCmdCallBack(const arm_test::gripper::ConstPtr& msg);
-    void GetArmControlCallBack(const arm_test::controls::ConstPtr& msg);
+    void arm_controlCallBack(const arm_test::controls::ConstPtr& msg);
 
     bool setLocalPosition();
     bool set_arm(int arm);

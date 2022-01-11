@@ -25,32 +25,53 @@ flight_control::FlightControlNode::FlightControlNode(ros::NodeHandle &n)
 
 void flight_control::FlightControlNode::InitSubcribers(ros::NodeHandle &n)
 {
-    LocalPositionSubscriber = n.subscribe<geometry_msgs::PointStamped>("dji_sdk/local_position", 10, &flight_control::FlightControlNode::GetLocalPositionCallBack, this);
+    LocalPositionSubscriber = 
+        n.subscribe<geometry_msgs::PointStamped>("dji_sdk/local_position",
+                                                 10, 
+                                                 &flight_control::FlightControlNode::GetLocalPositionCallBack, 
+                                                 this);
     //From radar
 
-    RefPositionSubscriber = n.subscribe<flight_control::point>("RefPoint", 10, &flight_control::FlightControlNode::GetRefPositionCallBack, this);
+    RefPositionSubscriber = 
+        n.subscribe<flight_control::point>("RefPoint", 
+                                           10, 
+                                           &flight_control::FlightControlNode::GetRefPositionCallBack, 
+                                           this);
 
-    MpcOutPutSubscriber = n.subscribe<mav_msgs::RollPitchYawrateThrust>("/cmd_attitude_thrust", 10, &flight_control::FlightControlNode::GetMpcOutPutCallBack, this);
+    MpcOutPutSubscriber = 
+        n.subscribe<mav_msgs::RollPitchYawrateThrust>("/cmd_attitude_thrust", 
+                                                      10, 
+                                                      &flight_control::FlightControlNode::GetMpcOutPutCallBack, 
+                                                      this);
 
     // ThrustCmdSubscriber = n.subscribe<arm_test::gripper>("gripper",10,&flight_control::FlightControlNode::GetThrustCmdCallBack,this);
 
-    DroneArmControlSubscriber = n.subscribe<arm_test::controls>("controls",10,&flight_control::FlightControlNode::GetArmControlCallBack,this);
+    DroneArmControlSubscriber = 
+        n.subscribe<arm_test::controls>("controls",
+                                        10,
+                                        &flight_control::FlightControlNode::GetArmControlCallBack,
+                                        this);
 }
 
 void flight_control::FlightControlNode::InitPublishers(ros::NodeHandle &n)
 {
-    this->CtrAttitudePublisher = n.advertise<sensor_msgs::Joy>("dji_sdk/flight_control_setpoint_generic", 10);
+    this->CtrAttitudePublisher = 
+        n.advertise<sensor_msgs::Joy>("dji_sdk/flight_control_setpoint_generic", 10);
 }
 
 void flight_control::FlightControlNode::InitServices(ros::NodeHandle &n)
 {
-    CtrlAuthorityService = n.serviceClient<dji_sdk::SDKControlAuthority>("dji_sdk/sdk_control_authority");
+    CtrlAuthorityService = 
+        n.serviceClient<dji_sdk::SDKControlAuthority>("dji_sdk/sdk_control_authority");
 
-    DroneTaskControlService = n.serviceClient<dji_sdk::DroneTaskControl>("dji_sdk/drone_task_control");
+    DroneTaskControlService = 
+        n.serviceClient<dji_sdk::DroneTaskControl>("dji_sdk/drone_task_control");
 
-    SetLocalPositionRefService = n.serviceClient<dji_sdk::SetLocalPosRef>("dji_sdk/set_local_pos_ref");
+    SetLocalPositionRefService = 
+        n.serviceClient<dji_sdk::SetLocalPosRef>("dji_sdk/set_local_pos_ref");
 
-    DroneArmControlService = n.serviceClient<dji_sdk::DroneArmControl>("dji_sdk/drone_arm_control");
+    DroneArmControlService = 
+        n.serviceClient<dji_sdk::DroneArmControl>("dji_sdk/drone_arm_control");
 }
 
 void flight_control::FlightControlNode::InitFlightControlThread()
@@ -172,7 +193,7 @@ bool flight_control::FlightControlNode::TakeoffLand(int task)
     return true;
 }
 
-void flight_control::FlightControlNode::GetLocalPositionCallBack(const geometry_msgs::PointStamped::ConstPtr &msg)
+void flight_control::FlightControlNode::local_positionCallBack(const geometry_msgs::PointStamped::ConstPtr &msg)
 {
     localPoint = msg->point;
     // ROS_INFO("x: %f,y:%f,z:%f", localPoint.x,localPoint.y,localPoint.z);
@@ -195,13 +216,13 @@ bool flight_control::FlightControlNode::set_arm(int arm)
     return true;
 }
 
-void flight_control::FlightControlNode::GetRefPositionCallBack(const flight_control::point::ConstPtr &msg)
+void flight_control::FlightControlNode::ref_positionCallBack(const flight_control::point::ConstPtr &msg)
 {
     RefPoint_ = msg->point;
 }
 
 
-void flight_control::FlightControlNode::GetMpcOutPutCallBack(const mav_msgs::RollPitchYawrateThrust::ConstPtr &msg)
+void flight_control::FlightControlNode::mpc_outputCallBack(const mav_msgs::RollPitchYawrateThrust::ConstPtr &msg)
 {
     this->temp_u_[0] = msg->roll;
     this->temp_u_[1] = msg->pitch;
@@ -227,7 +248,7 @@ void flight_control::FlightControlNode::GetMpcOutPutCallBack(const mav_msgs::Rol
 //     }
 // }
 
-void flight_control::FlightControlNode::GetArmControlCallBack(const arm_test::controls::ConstPtr &msg)
+void flight_control::FlightControlNode::arm_controlCallBack(const arm_test::controls::ConstPtr &msg)
 {
     this->du = this->max_compensate / 300.0;//(float)(msg->timeCtr[1]);
     // std::cout << "time: " << msg->timeCtr[1] << std::endl;
