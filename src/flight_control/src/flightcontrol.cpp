@@ -28,20 +28,20 @@ void flight_control::FlightControlNode::InitSubcribers(ros::NodeHandle &n)
     LocalPositionSubscriber = 
         n.subscribe<geometry_msgs::PointStamped>("dji_sdk/local_position",
                                                  10, 
-                                                 &flight_control::FlightControlNode::GetLocalPositionCallBack, 
+                                                 &flight_control::FlightControlNode::local_positionCallBack, 
                                                  this);
     //From radar
 
     RefPositionSubscriber = 
         n.subscribe<flight_control::point>("RefPoint", 
                                            10, 
-                                           &flight_control::FlightControlNode::GetRefPositionCallBack, 
+                                           &flight_control::FlightControlNode::ref_positionCallBack, 
                                            this);
 
     MpcOutPutSubscriber = 
         n.subscribe<mav_msgs::RollPitchYawrateThrust>("/cmd_attitude_thrust", 
                                                       10, 
-                                                      &flight_control::FlightControlNode::GetMpcOutPutCallBack, 
+                                                      &flight_control::FlightControlNode::mpc_outputCallBack, 
                                                       this);
 
     // ThrustCmdSubscriber = n.subscribe<arm_test::gripper>("gripper",10,&flight_control::FlightControlNode::GetThrustCmdCallBack,this);
@@ -49,7 +49,7 @@ void flight_control::FlightControlNode::InitSubcribers(ros::NodeHandle &n)
     DroneArmControlSubscriber = 
         n.subscribe<arm_test::controls>("controls",
                                         10,
-                                        &flight_control::FlightControlNode::GetArmControlCallBack,
+                                        &flight_control::FlightControlNode::arm_controlCallBack,
                                         this);
 }
 
