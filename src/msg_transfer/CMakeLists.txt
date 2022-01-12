@@ -21,10 +21,10 @@ add_service_files(
   SetRefPoint.srv
 )
 
-# add_message_files(
-#   FILES
-#   point.msg
-# )
+add_message_files(
+  FILES
+  PositionCommand.msg
+)
 
 generate_messages(
     DEPENDENCIES

@@ -3,15 +3,19 @@
 msg_transfer::msg_transferNode::msg_transferNode(ros::NodeHandle &n){
     this->InitPublishers(n);
     this->InitSubscribers(n);
+    publish_timer_ = 
+        n.createTimer(ros::Duration(publish_time_), 
+                      &msg_transfer::msg_transferNode::odom_cmdPublisher, 
+                      this);
 }
 
 void msg_transfer::msg_transferNode::InitPublishers(ros::NodeHandle &n){
-    OdometryPublisher        = n.advertise<nav_msgs::Odometry>("odom", 10);
-    PositionCommandPublisher = n.advertise<quadrotor_msgs::PositionCommand>("cmd", 10);
+    OdometryPublisher_        = n.advertise<nav_msgs::Odometry>("odom", 10);
+    PositionCommandPublisher_ = n.advertise<msg_transfer::PositionCommand>("cmd", 10);
 }
 
 void msg_transfer::msg_transferNode::InitSubscribers(ros::NodeHandle &n){
-    OptitrackSubscriber = 
+    OptitrackSubscriber_ = 
         n.subscribe<opti_msgs::Odom>("/agent/opti_odom",
                                      10,
                                      &msg_transfer::msg_transferNode::optitrack_msgCallBack,
@@ -57,4 +61,9 @@ void msg_transfer::msg_transferNode::is_trackCallBack(const arm_test::track::Con
     else{
         ROS_INFO_STREAM("untrack to target");
     }
+}
+
+void msg_transfer::msg_transferNode::odom_cmdPublisher(const ros::TimerEvent& time_event){
+    OdometryPublisher_.publish(odom_msg_);
+    PositionCommandPublisher_.publish(cmd_msg_);
 }
