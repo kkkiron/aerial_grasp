@@ -9,6 +9,7 @@
 #include <opti_msgs/Odom.h>
 #include <arm_test/track.h>
 #include <arm_test/position.h>
+#include <msg_transfer/SetRefPoint.h>
 
 
 namespace msg_transfer{
@@ -27,6 +28,12 @@ private:
     ros::Publisher PositionCommandPublisher_;
     ros::Subscriber OptitrackSubscriber_;
     ros::Subscriber IstrackSubscriber_;
+    ros::Subscriber ConsoleSubscriber_;
+
+    ros::ServiceServer set_point_server_;
+    bool setPoint(
+        msg_transfer::SetRefPoint::Request& req_set_point, 
+        msg_transfer::SetRefPoint::Response& res_set_point);
 
     ros::Timer publish_timer_;
     double publish_time_ = 0.01;
@@ -34,14 +41,14 @@ private:
     msg_transfer::PositionCommand cmd_msg_;
     bool is_track_ = false;
     bool received_desired_pose_ = false;
-    int id_ = 1;
-    int target_rigidbody_id_ = 0;
+    int id_ = 0;
+    int target_rigidbody_id_ = 1;
 
-    // 真实位置 = 相对位置 + 参考位置， 通过控制台调整相对位置来实现对接
-    double x_rel_ = 0.0, y_rel_ = 0.0, z_rel_ = 0.0; // 相对位置
-    double x_act_ = 0.0, y_act_ = 0.0, z_act_ = 0.0; // 真实位置
-    double x_ref_ = 0.0, y_ref_ = 0.0, z_ref_ = 0.0; // 参考位置
-
+    // 真实位置 = 相对位置 + 参考位置 + 偏移位置， 通过控制台调整相对位置来实现对接
+    double x_rel_  = 0.0, y_rel_  = 0.0, z_rel_  = 0.0; // 相对位置
+    double x_act_  = 0.0, y_act_  = 0.0, z_act_  = 0.0; // 真实位置
+    double x_ref_  = 0.0, y_ref_  = 0.0, z_ref_  = 0.0; // 参考位置
+    double x_bias_ = 0.0, y_bias_ = 0.0, z_bias_ = 0.0; // 与参考位置的偏移量
 
 
     void optitrack_msgCallBack(const opti_msgs::Odom::ConstPtr& opti_msg);

@@ -3,6 +3,12 @@
 msg_transfer::msg_transferNode::msg_transferNode(ros::NodeHandle &n){
     this->InitPublishers(n);
     this->InitSubscribers(n);
+
+    set_point_server_ = 
+        n.advertiseService("/set_point",
+                             &msg_transfer::msg_transferNode::setPoint, 
+                             this);
+
     publish_timer_ = 
         n.createTimer(ros::Duration(publish_time_), 
                       &msg_transfer::msg_transferNode::odom_cmdPublisher, 
@@ -19,6 +25,16 @@ void msg_transfer::msg_transferNode::InitSubscribers(ros::NodeHandle &n){
         n.subscribe<opti_msgs::Odom>("/agent/opti_odom",
                                      10,
                                      &msg_transfer::msg_transferNode::optitrack_msgCallBack,
+                                     this);
+    IstrackSubscriber_ =
+        n.subscribe<arm_test::track>("/track",
+                                     10,
+                                     &msg_transfer::msg_transferNode::is_trackCallBack,
+                                     this);
+    ConsoleSubscriber_ =
+        n.subscribe<arm_test::position>("/position",
+                                     10,
+                                     &msg_transfer::msg_transferNode::consoleCallBack,
                                      this);
 }
 
@@ -37,6 +53,12 @@ void msg_transfer::msg_transferNode::optitrack_msgCallBack(const opti_msgs::Odom
     
     if(opti_msg->rigidBodyID == this->target_rigidbody_id_ && is_track_)
     {
+        x_ref_ = opti_msg->position.x;
+        y_ref_ = opti_msg->position.y;
+        z_ref_ = opti_msg->position.z;
+        x_act_ = x_ref_ + x_rel_ + x_bias_;
+        y_act_ = y_ref_ + y_rel_ + y_bias_;
+        z_act_ = z_ref_ + z_rel_ + z_bias_;
         cmd_msg_.position.x = x_act_;
         cmd_msg_.position.y = y_act_;
         cmd_msg_.position.z = z_act_;
@@ -47,9 +69,18 @@ void msg_transfer::msg_transferNode::consoleCallBack(const arm_test::position::C
     x_rel_ = rel_msg->x_relative;
     y_rel_ = rel_msg->y_relative;
     z_rel_ = rel_msg->z_relative;
-    x_act_ = x_ref_ + x_rel_;
-    y_act_ = y_ref_ + y_rel_;
-    z_act_ = z_ref_ + z_rel_;
+
+    ROS_INFO_STREAM("  x_rel_:   " << x_rel_ << 
+                    "      y_rel_:   " << y_rel_ <<
+                    "      z_rel_:   " << z_rel_);
+
+    ROS_INFO_STREAM("  x_ref_:   " << x_ref_ << 
+                    "      y_ref_:   " << y_ref_ <<
+                    "      z_ref_:   " << z_ref_);
+
+    ROS_INFO_STREAM("  x_act_:   " << x_act_ << 
+                    "      y_act_:   " << y_act_ <<
+                    "      z_act_:   " << z_act_);
 }
 
 void msg_transfer::msg_transferNode::is_trackCallBack(const arm_test::track::ConstPtr& is_track){
@@ -66,4 +97,19 @@ void msg_transfer::msg_transferNode::is_trackCallBack(const arm_test::track::Con
 void msg_transfer::msg_transferNode::odom_cmdPublisher(const ros::TimerEvent& time_event){
     OdometryPublisher_.publish(odom_msg_);
     PositionCommandPublisher_.publish(cmd_msg_);
+}
+
+bool msg_transfer::msg_transferNode::setPoint(
+                            msg_transfer::SetRefPoint::Request& req_set_point, 
+                            msg_transfer::SetRefPoint::Response& res_set_point){
+    ROS_INFO_STREAM("Desired pose requested");
+
+    received_desired_pose_ = true;
+    x_bias_ = req_set_point.pose.position.x;
+    y_bias_ = req_set_point.pose.position.y;
+    z_bias_ = req_set_point.pose.position.z;
+
+    ROS_INFO_STREAM("\nx_bias:  " << x_bias_ <<
+                    "\ny_bias:  " << y_bias_ <<
+                    "\nz_bias:  " << z_bias_);
 }
