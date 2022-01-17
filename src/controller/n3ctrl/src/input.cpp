@@ -92,7 +92,11 @@ Odom_Data_t::Odom_Data_t() {
 };
 
 void Odom_Data_t::feed(nav_msgs::OdometryConstPtr pMsg) {
+    std::cout << "into odom callback" << std::endl;
     msg = *pMsg;
+    std::cout << "x: " << msg.pose.pose.position.x << std::endl; 
+    std::cout << "y: " << msg.pose.pose.position.y << std::endl; 
+    std::cout << "z: " << msg.pose.pose.position.z << std::endl; 
     rcv_stamp = ros::Time::now();
 
     uav_utils::extract_odometry(pMsg, p, v, q, w);

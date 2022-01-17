@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
                                        ros::VoidConstPtr(),
                                        ros::TransportHints().tcpNoDelay());
 
-    fsm.controller.ctrl_pub = nh.advertise<n3ctrl::N3ControllerOutput>("ctrl", 10);
+    fsm.controller.ctrl_pub = nh.advertise<sensor_msgs::Joy>("ctrl_n3", 10);
 
     // fsm.controller.ctrl_so3_pub	=
     // 	nh.advertise<quadrotor_msgs::SO3Command>("ctrl_so3", 10);
