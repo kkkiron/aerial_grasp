@@ -92,14 +92,21 @@ Odom_Data_t::Odom_Data_t() {
 };
 
 void Odom_Data_t::feed(nav_msgs::OdometryConstPtr pMsg) {
-    std::cout << "into odom callback" << std::endl;
     msg = *pMsg;
-    std::cout << "x: " << msg.pose.pose.position.x << std::endl; 
-    std::cout << "y: " << msg.pose.pose.position.y << std::endl; 
-    std::cout << "z: " << msg.pose.pose.position.z << std::endl; 
     rcv_stamp = ros::Time::now();
 
     uav_utils::extract_odometry(pMsg, p, v, q, w);
+}
+
+GP_output_t::GP_output_t() {
+    rcv_stamp = ros::Time(0);
+};
+
+void GP_output_t::feed(n3ctrl::gp_outputConstPtr pMsg) {
+    msg = *pMsg;
+    a(0) = msg.gp_ax;
+    a(1) = msg.gp_ay;
+    a(2) = msg.gp_az;
 }
 
 Imu_Data_t::Imu_Data_t() {

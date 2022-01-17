@@ -29,6 +29,8 @@ private:
     ros::Subscriber OptitrackSubscriber_;
     ros::Subscriber IstrackSubscriber_;
     ros::Subscriber ConsoleSubscriber_;
+    ros::Subscriber OdomSubscriber_;
+
 
     ros::ServiceServer set_point_server_;
     bool setPoint(
@@ -50,11 +52,12 @@ private:
     double x_ref_  = 0.0, y_ref_  = 0.0, z_ref_  = 0.0; // 参考位置
     double x_bias_ = 0.0, y_bias_ = 0.0, z_bias_ = 0.0; // 与参考位置的偏移量
 
-
+    void odomCallBack(const nav_msgs::Odometry::ConstPtr& opti_msg);
     void optitrack_msgCallBack(const opti_msgs::Odom::ConstPtr& opti_msg);
     void is_trackCallBack(const arm_test::track::ConstPtr& is_track);
     void consoleCallBack(const arm_test::position::ConstPtr& rel_msg);
     void odom_cmdPublisher(const ros::TimerEvent& time_event);
+    
 };
 
 

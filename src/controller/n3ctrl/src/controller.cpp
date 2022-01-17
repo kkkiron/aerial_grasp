@@ -48,7 +48,8 @@ void Controller::config_gain(const Parameter_t::Gain& gain)
 
 void Controller::update(
 	const Desired_State_t& des, 
-	const Odom_Data_t& odom, 
+	const Odom_Data_t& odom,
+	const GP_output_t& gp_a, 
 	Controller_Output_t& u, 
 	SO3_Controller_Output_t& u_so3
 )
@@ -91,7 +92,14 @@ void Controller::update(
 		}
 	}
 
-	Eigen::Vector3d u_v = u_v_p + u_v_i;
+
+	Eigen::Vector3d u_v = u_v_p + u_v_i ;//- gp_a.a; //+gp_output_a
+	Eigen::Vector3d u_v_gp = u_v_p + u_v_i - gp_a.a;
+
+    //Eigen::Vector3d u_v_gp = gp_a.a;  // mpc_gp_pd_clf_cbf
+
+	//ROS_INFO("u_v_x = %f, u_v_y = %f, u_v_z = %f, gp_a.a[0] = %f, gp_a.a[1] = %f, gp_a.a[2] = %f", u_v[0], u_v[1], u_v[2],gp_a.a[0],gp_a.a[1],gp_a.a[2]);
+	ROS_INFO("u_v_x = %f, u_v_y = %f, u_v_z = %f, gp_a.a[0] = %f, gp_a.a[1] = %f, gp_a.a[2] = %f", u_v[0], u_v[1], u_v[2],gp_a.a[0],gp_a.a[1],gp_a.a[2]);
 
 	e_yaw = yaw_des - yaw_curr;
 
@@ -101,8 +109,10 @@ void Controller::update(
 	double u_yaw = Kyaw * e_yaw;
 	
 	
-	F_des = u_v * param.mass + 
-		Vector3d(0, 0, param.mass * param.gra) + Ka * param.mass * des.a;
+	 F_des = u_v_gp * param.mass + 
+	 	Vector3d(0, 0, param.mass * param.gra) + Ka * param.mass * des.a;
+
+	//F_des = u_v_gp * param.mass + Ka * param.mass * des.a;
 	
 	if (F_des(2) < 0.5 * param.mass * param.gra)
 	{
@@ -132,7 +142,7 @@ void Controller::update(
 	}
 	// }
 
-	if(param.pub_debug_msgs)
+	if(true)  //param.pub_debug_msgs
 	{
 		std_msgs::Header msg;
 		msg = odom.msg.header;
@@ -307,10 +317,12 @@ void Controller::publish_ctrl(const Controller_Output_t& u, const ros::Time& sta
 	if (u.mode < 0)
 	{
 		msg.axes.push_back(u.thrust);
+		printf("u.mode< 0 is %f",u.thrust);
 	}
 	else
 	{
-		msg.axes.push_back(u.thrust*100);	
+		msg.axes.push_back(u.thrust*100);
+		printf("u.mode> 0 is %f",u.thrust*100);	
 	}
 	msg.axes.push_back(toDeg(-u.yaw));
 	msg.axes.push_back(u.mode);

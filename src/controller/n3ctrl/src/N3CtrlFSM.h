@@ -20,6 +20,7 @@ public:
 
 	RC_Data_t rc_data;
 	Odom_Data_t odom_data;
+	GP_output_t gp_output_data;
 	Imu_Data_t imu_data;
 	Command_Data_t cmd_data;
 	Idling_Data_t idling_data;

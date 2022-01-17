@@ -9,8 +9,9 @@
 #include <signal.h>
 
 #include <n3ctrl/ControllerDebug.h>
-#include <n3ctrl/N3ControllerOutput.h>
+#include <n3ctrl/gp_output.h>
 N3CtrlFSM* pFSM;
+
 
 void mySigintHandler(int sig) {
     pFSM->stateVisualizer.publish_led_vis(ros::Time::now(), "null");
@@ -67,6 +68,15 @@ int main(int argc, char* argv[]) {
     fsm.rc_data.set_default_mode(std::string("noapi"));
     fsm.controller.config();
 
+    ros::Subscriber gp_output_sub = 
+        nh.subscribe<n3ctrl::gp_output>("cmd_gp_out_a",
+                                        1000,
+                                        boost::bind(&GP_output_t::feed, &fsm.gp_output_data, _1),
+                                        ros::VoidConstPtr(),
+                                        ros::TransportHints().tcpNoDelay());
+   // ros::Subscriber gp_output_sub = nh.subscribe("cmd_gp_out_a", 1000, gp_output_Callback);
+    
+       
     ros::Subscriber joy_sub =
         nh.subscribe<sensor_msgs::Joy>("joy",
                                        1000,
@@ -109,7 +119,7 @@ int main(int argc, char* argv[]) {
                                        ros::VoidConstPtr(),
                                        ros::TransportHints().tcpNoDelay());
 
-    fsm.controller.ctrl_pub = nh.advertise<sensor_msgs::Joy>("ctrl_n3", 10);
+    fsm.controller.ctrl_pub = nh.advertise<sensor_msgs::Joy>("ctrl", 10);
 
     // fsm.controller.ctrl_so3_pub	=
     // 	nh.advertise<quadrotor_msgs::SO3Command>("ctrl_so3", 10);

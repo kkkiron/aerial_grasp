@@ -74,7 +74,7 @@ public:
 	Controller(Parameter_t&);
 	void config_gain(const Parameter_t::Gain& gain);
 	void config();
-	void update(const Desired_State_t& des, const Odom_Data_t& odom, 
+	void update(const Desired_State_t& des, const Odom_Data_t& odom, const GP_output_t& gp_a,
 		Controller_Output_t& u, SO3_Controller_Output_t& u_so3
 	);
 	

@@ -13,6 +13,7 @@
 #include <quadrotor_msgs/PositionCommand.h>
 #include <geometry_msgs/Vector3Stamped.h>
 #include <uav_utils/utils.h>
+#include <n3ctrl/gp_output.h>
 #include "N3CtrlParam.h"
 
 class RC_Data_t {
@@ -62,6 +63,17 @@ class Odom_Data_t {
 
     Odom_Data_t();
     void feed(nav_msgs::OdometryConstPtr pMsg);
+};
+
+class GP_output_t{
+   public:
+   Eigen::Vector3d a;
+   
+   n3ctrl::gp_output msg;
+   ros::Time rcv_stamp;
+
+   GP_output_t();
+   void feed(n3ctrl::gp_outputConstPtr pMsg); 
 };
 
 class Imu_Data_t {

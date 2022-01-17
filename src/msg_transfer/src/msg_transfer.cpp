@@ -36,6 +36,16 @@ void msg_transfer::msg_transferNode::InitSubscribers(ros::NodeHandle &n){
                                      10,
                                      &msg_transfer::msg_transferNode::consoleCallBack,
                                      this);
+    OdomSubscriber_ =
+        n.subscribe<nav_msgs::Odometry>("odom",
+                                     10,
+                                     &msg_transfer::msg_transferNode::odomCallBack,
+                                     this);
+    
+}
+
+void msg_transfer::msg_transferNode::odomCallBack(const nav_msgs::Odometry::ConstPtr& opti_msg){
+    std::cout << "odom callback" << std::endl;
 }
 
 void msg_transfer::msg_transferNode::optitrack_msgCallBack(const opti_msgs::Odom::ConstPtr& opti_msg){

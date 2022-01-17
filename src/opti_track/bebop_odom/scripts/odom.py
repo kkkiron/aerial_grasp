@@ -37,7 +37,7 @@ lastPosition = [0,0,0]
 linearVelocity = [0,0,0]
 angularVelocity = [0,0,0]
 last_angle = [0,0,0]
-topicName = 'odom'
+topicName = '/uav1/odom'
 nodeName = 'agent_opti_node'
 
 ###########################################

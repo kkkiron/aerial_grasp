@@ -28,6 +28,9 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   uav_utils
   message_generation
+  actionlib_msgs
+  nav_msgs
+  std_msgs
 )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -46,15 +49,20 @@ find_package(Eigen REQUIRED) # try to find manually installed eigen (Usually in 
 ## Declare ROS messages, services and actions ##
 ################################################
 
+add_service_files(DIRECTORY srv FILES AddData2Model.srv PredictModel.srv)
+add_action_files(DIRECTORY action FILES TrainModel.action)
 add_message_files(
   FILES
   ControllerDebug.msg
+  gp_output.msg
 )
 
 generate_messages(
     DEPENDENCIES
     geometry_msgs
     std_msgs
+    actionlib_msgs
+    nav_msgs
 )
 
 ###################################
