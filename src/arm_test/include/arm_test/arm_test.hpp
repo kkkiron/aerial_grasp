@@ -11,6 +11,7 @@
 #include <arm_test/track.h>
 #include <thread>
 #include <opencv2/opencv.hpp>
+#include <std_msgs/Int8.h>
 
 namespace arm_test{
 

@@ -47,7 +47,7 @@ void flight_control::FlightControlNode::InitSubcribers(ros::NodeHandle &n)
     // ThrustCmdSubscriber = n.subscribe<arm_test::gripper>("gripper",10,&flight_control::FlightControlNode::GetThrustCmdCallBack,this);
 
     DroneArmControlSubscriber = 
-        n.subscribe<arm_test::controls>("controls",
+        n.subscribe<std_msgs::Int8>("mp_cmd",
                                         10,
                                         &flight_control::FlightControlNode::arm_controlCallBack,
                                         this);
@@ -110,21 +110,21 @@ void flight_control::FlightControlNode::FlightControlThread()
 
     while (ros::ok())
     {
-        CmdFliter();
-        if(!is_flitered_) {
-            continue;
-        }
+        // CmdFliter();
+        // if(!is_flitered_) {
+        //     continue;
+        // }
         float roll   = u_[0] - u_compensate;
         float pitch  = u_[1];
         float yaw    = u_[2];
         float thrust = u_[3] / (3.3 * (9.81 + 20)) * 100;
         static int counter = 0;
-        if(counter == 50) {
-            std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
-            counter = 0;
-        }
-        counter++;
-
+        // if(counter == 50) {
+        //     std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
+        //     counter = 0;
+        // }
+        // counter++;
+        std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
         sensor_msgs::Joy controlVelYawRate;
         uint8_t flag = (DJISDK::VERTICAL_THRUST |
                         DJISDK::HORIZONTAL_ANGLE |
@@ -224,10 +224,10 @@ void flight_control::FlightControlNode::ref_positionCallBack(const flight_contro
 
 void flight_control::FlightControlNode::mpc_outputCallBack(const mav_msgs::RollPitchYawrateThrust::ConstPtr &msg)
 {
-    this->temp_u_[0] = msg->roll;
-    this->temp_u_[1] = msg->pitch;
-    this->temp_u_[2] = 0; //yaw = 0
-    this->temp_u_[3] = msg->thrust.z;
+    this->u_[0] = msg->roll;
+    this->u_[1] = msg->pitch;
+    this->u_[2] = 0; //yaw = 0
+    this->u_[3] = msg->thrust.z;
     is_recepted_ = true;
 }
 
@@ -248,13 +248,13 @@ void flight_control::FlightControlNode::mpc_outputCallBack(const mav_msgs::RollP
 //     }
 // }
 
-void flight_control::FlightControlNode::arm_controlCallBack(const arm_test::controls::ConstPtr &msg)
+void flight_control::FlightControlNode::arm_controlCallBack(const std_msgs::Int8::ConstPtr &msg)
 {
     this->du = this->max_compensate / 300.0;//(float)(msg->timeCtr[1]);
     // std::cout << "time: " << msg->timeCtr[1] << std::endl;
     std::cout << "du: " << du << std::endl;
     std::cout << "into GetArmControlCallBack function" << std::endl;
-    if(msg->armCtr==this->pos4)  //当
+    if(msg->data==2)  //当
     {
         while(u_compensate < max_compensate)  //线性增长至max_compensate
         {
@@ -269,7 +269,7 @@ void flight_control::FlightControlNode::arm_controlCallBack(const arm_test::cont
         }
     }
     
-    else if (msg->armCtr==this->pos5) 
+    else if (msg->data==0) 
     {
         while(u_compensate > -max_compensate)  
         {

@@ -6,7 +6,7 @@
 #include <geometry_msgs/QuaternionStamped.h>
 #include <geometry_msgs/Vector3Stamped.h>
 #include <sensor_msgs/NavSatFix.h>
-#include <std_msgs/UInt8.h>
+#include <std_msgs/Int8.h>
 
 //DJI include 
 #include "../../../../devel/include/dji_sdk/DroneTaskControl.h"
@@ -60,7 +60,7 @@ private:
     void ref_positionCallBack(const flight_control::point::ConstPtr& msg);
     void mpc_outputCallBack(const mav_msgs::RollPitchYawrateThrust::ConstPtr& msg);
     // void GetThrustCmdCallBack(const arm_test::gripper::ConstPtr& msg);
-    void arm_controlCallBack(const arm_test::controls::ConstPtr& msg);
+    void arm_controlCallBack(const std_msgs::Int8::ConstPtr& msg);
 
     bool setLocalPosition();
     bool set_arm(int arm);

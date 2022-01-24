@@ -10,7 +10,8 @@ arm_test::armtestNode::armtestNode(ros::NodeHandle &n){
 }
 
 void arm_test::armtestNode::InitPublishers(ros::NodeHandle &n){
-    ArmControlPublisher = n.advertise<arm_test::controls>("controls",10);
+    // ArmControlPublisher = n.advertise<arm_test::controls>("controls",10);
+    ArmControlPublisher = n.advertise<std_msgs::Int8>("mp_cmd",10);
     GripperPublisher    = n.advertise<arm_test::gripper>("gripper",10);
     RefPointPublisher   = n.advertise<arm_test::point>("RefPoint",10);
     PositionPublisher   = n.advertise<arm_test::position>("/position",10);
@@ -58,7 +59,8 @@ void arm_test::armtestNode::PanelThread(){
 
     const float control_presision = 0.01;
 
-    arm_test::controls ctr;
+    // arm_test::controls ctr;
+    std_msgs::Int8 ctr;
     arm_test::gripper  gr;
     arm_test::point Refp;
     arm_test::position pos;
@@ -170,13 +172,38 @@ void arm_test::armtestNode::PanelThread(){
             /* quadrotor direction */
 
                 
-            // case 'q':
-            //         ctr.armCtr  = pos1;
-            //         ctr.timeCtr = tim1;
-            //         ctr.GripSta = 0xff;
+            case '1':
+                    ctr.data  = 0;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "pose 1" << std::endl;
+                    break;
+            // case '2':
+            //         ctr.data  = 1;
             //         this->ArmControlPublisher.publish(ctr);
-            //         std::cout << "pose 1" << std::endl;
+            //         std::cout << "pose 2" << std::endl;
             //         break;
+            case '3':
+                    ctr.data  = 2;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "pose 3" << std::endl;
+                    break;
+            case '4':
+                    ctr.data  = 3;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "pose 4" << std::endl;
+                    break;
+
+            case '5':
+                    ctr.data  = 96;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "griper pose 1" << std::endl;
+                    break;
+
+            case '6':
+                    ctr.data  = 97;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "griper pose 2" << std::endl;
+                    break;
             // case 'w':
             //         ctr.armCtr  = pos2;
             //         ctr.timeCtr = tim2;

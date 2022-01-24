@@ -142,8 +142,8 @@ class LinearModelPredictiveController
 
      
 
-    int id_ = 1;
-    int target_rigidbody_id_ = 0;
+    int id_ = 0;
+    int target_rigidbody_id_ = 1;
     bool is_track_ = false;
 };
 
