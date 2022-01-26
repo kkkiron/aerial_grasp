@@ -117,14 +117,15 @@ void flight_control::FlightControlNode::FlightControlThread()
         float roll   = u_[0] - u_compensate;
         float pitch  = u_[1];
         float yaw    = u_[2];
-        float thrust = u_[3] / (3.3 * (9.81 + 20)) * 100;
+        float thrust = u_[3] / (3.3 * (9.81 + 10)) * 100;
         static int counter = 0;
         // if(counter == 50) {
         //     std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
         //     counter = 0;
         // }
         // counter++;
-        std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
+        std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust;
+        std::cout << "     u_com: " << u_compensate << std::endl;
         sensor_msgs::Joy controlVelYawRate;
         uint8_t flag = (DJISDK::VERTICAL_THRUST |
                         DJISDK::HORIZONTAL_ANGLE |
@@ -250,7 +251,7 @@ void flight_control::FlightControlNode::mpc_outputCallBack(const mav_msgs::RollP
 
 void flight_control::FlightControlNode::arm_controlCallBack(const std_msgs::Int8::ConstPtr &msg)
 {
-    this->du = this->max_compensate / 300.0;//(float)(msg->timeCtr[1]);
+    this->du = this->max_compensate / 1000.0;//(float)(msg->timeCtr[1]);
     // std::cout << "time: " << msg->timeCtr[1] << std::endl;
     std::cout << "du: " << du << std::endl;
     std::cout << "into GetArmControlCallBack function" << std::endl;

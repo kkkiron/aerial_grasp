@@ -19,7 +19,7 @@ private:
     ros::Publisher      resp_pos_pub_;
 
     /* serial */
-    std::string port_   =    "/dev/ttyUSB0";
+    std::string port_   =    "/dev/ttyUSB1";
     uint32_t baud_      =    115200;
     serial::Timeout t_  =    serial::Timeout::simpleTimeout(2);
     serial::Serial lobot_serial_;

@@ -57,7 +57,7 @@ void arm_test::armtestNode::PanelThread(){
     const std::vector<float>  point4 {1,1,1.6};
     const std::vector<float>  point5 {10,0,1.6};
 
-    const float control_presision = 0.01;
+    const float control_presision = 0.04;
 
     // arm_test::controls ctr;
     std_msgs::Int8 ctr;
@@ -111,7 +111,7 @@ void arm_test::armtestNode::PanelThread(){
                 std::cout << "y--: " << y_r << std::endl;
                 break;
             
-            case 'a':
+            case 'd':
                 x_r += control_presision;
                 pos.x_relative = x_r;
                 pos.y_relative = y_r;
@@ -120,7 +120,7 @@ void arm_test::armtestNode::PanelThread(){
                 std::cout << "x++: " << x_r << std::endl;
                 break; 
              
-            case 'd':
+            case 'a':
                 x_r -= control_presision;
                 pos.x_relative = x_r;
                 pos.y_relative = y_r;
