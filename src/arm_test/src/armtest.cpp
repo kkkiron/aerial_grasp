@@ -177,11 +177,11 @@ void arm_test::armtestNode::PanelThread(){
                     this->ArmControlPublisher.publish(ctr);
                     std::cout << "pose 1" << std::endl;
                     break;
-            // case '2':
-            //         ctr.data  = 1;
-            //         this->ArmControlPublisher.publish(ctr);
-            //         std::cout << "pose 2" << std::endl;
-            //         break;
+            case '2':
+                    ctr.data  = 1;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "pose 2" << std::endl;
+                    break;
             case '3':
                     ctr.data  = 2;
                     this->ArmControlPublisher.publish(ctr);
@@ -192,7 +192,16 @@ void arm_test::armtestNode::PanelThread(){
                     this->ArmControlPublisher.publish(ctr);
                     std::cout << "pose 4" << std::endl;
                     break;
-
+            case 'p':
+                    ctr.data  = 10;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "thrust compensate" << std::endl;
+                    break;
+            case 'o':
+                    ctr.data  = 11;
+                    this->ArmControlPublisher.publish(ctr);
+                    std::cout << "release thrust compensate" << std::endl;
+                    break;
             case '5':
                     ctr.data  = 96;
                     this->ArmControlPublisher.publish(ctr);

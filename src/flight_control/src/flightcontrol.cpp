@@ -114,10 +114,10 @@ void flight_control::FlightControlNode::FlightControlThread()
         // if(!is_flitered_) {
         //     continue;
         // }
-        float roll   = u_[0] - u_compensate;
+        float roll   = u_[0] - u_compensate_;
         float pitch  = u_[1];
         float yaw    = u_[2];
-        float thrust = u_[3] / (3.3 * (9.81 + 10)) * 100;
+        float thrust = u_[3] / (3.3 * (9.81 + 10)) * 100 + f_compensate_;
         static int counter = 0;
         // if(counter == 50) {
         //     std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust <<std::endl;
@@ -125,7 +125,7 @@ void flight_control::FlightControlNode::FlightControlThread()
         // }
         // counter++;
         std::cout << "     roll: " << roll      << "            pitch: " << pitch << "      thrust:" << thrust;
-        std::cout << "     u_com: " << u_compensate << std::endl;
+        std::cout << "     u_com: " << u_compensate_ << std::endl;
         sensor_msgs::Joy controlVelYawRate;
         uint8_t flag = (DJISDK::VERTICAL_THRUST |
                         DJISDK::HORIZONTAL_ANGLE |
@@ -251,36 +251,55 @@ void flight_control::FlightControlNode::mpc_outputCallBack(const mav_msgs::RollP
 
 void flight_control::FlightControlNode::arm_controlCallBack(const std_msgs::Int8::ConstPtr &msg)
 {
-    this->du = this->max_compensate / 1000.0;//(float)(msg->timeCtr[1]);
+    du_ = max_compensate_ / 1000.0;//(float)(msg->timeCtr[1]);
+    df_ = max_fcompensate_ / 500.0;
     // std::cout << "time: " << msg->timeCtr[1] << std::endl;
-    std::cout << "du: " << du << std::endl;
-    std::cout << "into GetArmControlCallBack function" << std::endl;
-    if(msg->data==2)  //当
+    // std::cout << "du: " << du_ << std::endl;
+    // std::cout << "into GetArmControlCallBack function" << std::endl;
+    if(msg->data==3)  //当
     {
-        while(u_compensate < max_compensate)  //线性增长至max_compensate
+        while(u_compensate_ < max_compensate_)  //线性增长至max_compensate
         {
-            u_compensate += du;
+            u_compensate_ += du_;
             ros::Duration(0.001).sleep();
         }
 
-        while(u_compensate >= 0.0)   //减小到0
+        while(u_compensate_ >= 0.0)   //减小到0
         {
-            u_compensate -= du;
+            u_compensate_ -= du_;
             ros::Duration(0.001).sleep();
         }
     }
     
     else if (msg->data==0) 
     {
-        while(u_compensate > -max_compensate)  
+        while(u_compensate_ > -max_compensate_)  
         {
-            u_compensate -= du;
+            u_compensate_ -= du_;
             ros::Duration(0.001).sleep();
         }
 
-        while(u_compensate <= 0.0)
+        while(u_compensate_ <= 0.0)
         {
-            u_compensate += du;
+            u_compensate_ += du_;
+            ros::Duration(0.001).sleep();
+        }
+    }
+
+    else if (msg->data==10) // 对接机械臂之后对推力进行补偿
+    {
+        while(f_compensate_ < max_fcompensate_)
+        {
+            f_compensate_ += df_;
+            ros::Duration(0.001).sleep();
+        }
+    }
+
+    else if (msg->data==11) // 取消对接机械臂之后对推力进行补偿
+    {
+        while(f_compensate_ >= 0.0)
+        {
+            f_compensate_ -= df_;
             ros::Duration(0.001).sleep();
         }
     }

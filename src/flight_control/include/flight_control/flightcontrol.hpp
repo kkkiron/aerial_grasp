@@ -81,9 +81,12 @@ private:
     const std::vector<uint16_t> pos3 {0,  347,   597,   446,   600,  468};
     const std::vector<uint16_t> pos4 {0xAA ,0x00, 0x00, 0xAA, 0x01, 0x00, 0x00, 0x01, 0xff};
     const std::vector<uint16_t> pos5 {0xAA ,0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0xff};
-    float u_compensate = 0;
-    const float max_compensate = 0.01744 * 7.0;
-    float du;
+    float u_compensate_ = 0;
+    const float max_compensate_ = 0.01744 * 7.0;
+    float du_;
+    float f_compensate_ = 0;
+    const float max_fcompensate_ = 20;
+    float df_;
 
     // cmdfliter
     bool is_recepted_ = false;

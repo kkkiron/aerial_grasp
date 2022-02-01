@@ -40,7 +40,7 @@ void serial_ctrl::serial_write_callback(const manipulator_msgs::serial_buf::Cons
         if(lobot_serial_.read(resp_buf.buf, 8) != 0)break;
         
     }
-    lobot_serial_.read(8192);//clear buf
+    lobot_serial_.read(256);//clear buf
 
     /* debug */
     for (size_t i = 0; i < resp_buf.buf.size() && verbal; i++)
