@@ -1,5 +1,8 @@
 #include "../include/arm_test/arm_test.hpp"
 #include "std_msgs/Char.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 arm_test::armtestNode::armtestNode(ros::NodeHandle &n){
     backGround = cv::Mat(30,30,CV_8UC1,cv::Scalar(0));
     
@@ -67,15 +70,221 @@ void arm_test::armtestNode::PanelThread(){
     arm_test::track is_track;
     float x_r = 0.0, y_r = 0.0, z_r = 0.0;
     bool track = false;
-    while(ros::ok()){
-        imshow(this->DisplayName, this->backGround);
-        // ROS_INFO("release: press q; grasp: press w ");
-        ////czj
+    //  
+        // while(ros::ok()){
+        //     imshow(this->DisplayName, this->backGround);
+        //     // ROS_INFO("release: press q; grasp: press w ");
+        //     ////czj
+            
+        //     // std::stringstream ss;
+        //     // ss<<"mission";
+        //     // msg.data = ss.str();
+        //     char k = (char)cv::waitKey(1);
+        //     std_msgs::Char msg;
+        //     msg.data = k;
+        //     switch(k){
+        //             // ros Client 
+        //         /* robotic arm switch */     
+        //         case 'n':
+        //             // //czj
+        //             _1dof_gripper_r.publish(msg);
+        //             break;
+
+        //         case 'm':
+        //             // //czj
+        //             _1dof_gripper_g.publish(msg);
+        //             break;
+        //         /* robotic arm switch */ 
+
+        //         /* quadrotor direction */            
+        //         case 'w':
+        //             y_r += control_presision;
+        //             pos.x_relative = x_r;
+        //             pos.y_relative = y_r;
+        //             pos.z_relative = z_r;
+        //             this->PositionPublisher.publish(pos);
+        //             std::cout << "y++: " << y_r << std::endl;
+        //             break; 
+                
+        //         case 's':
+        //             y_r -= control_presision;
+        //             pos.x_relative = x_r;
+        //             pos.y_relative = y_r;
+        //             pos.z_relative = z_r;
+        //             this->PositionPublisher.publish(pos);
+        //             std::cout << "y--: " << y_r << std::endl;
+        //             break;
+                
+        //         case 'd':
+        //             x_r += control_presision;
+        //             pos.x_relative = x_r;
+        //             pos.y_relative = y_r;
+        //             pos.z_relative = z_r;
+        //             this->PositionPublisher.publish(pos);
+        //             std::cout << "x++: " << x_r << std::endl;
+        //             break; 
+                
+        //         case 'a':
+        //             x_r -= control_presision;
+        //             pos.x_relative = x_r;
+        //             pos.y_relative = y_r;
+        //             pos.z_relative = z_r;
+        //             this->PositionPublisher.publish(pos);
+        //             std::cout << "x--: " << x_r << std::endl;
+        //             break;
+                
+        //         case 'q':
+        //             z_r += control_presision;
+        //             pos.x_relative = x_r;
+        //             pos.y_relative = y_r;
+        //             pos.z_relative = z_r;
+        //             this->PositionPublisher.publish(pos);
+        //             std::cout << "z++: " << z_r << std::endl;
+        //             break;
+                
+        //         case 'e':
+        //             z_r -= control_presision;
+        //             pos.x_relative = x_r;
+        //             pos.y_relative = y_r;
+        //             pos.z_relative = z_r;
+        //             this->PositionPublisher.publish(pos);
+        //             std::cout << "z--: " << z_r << std::endl;
+        //             break;
+                
+        //         case 'g':
+        //             x_r = 0;
+        //             y_r = 0;
+        //             z_r = 0;
+        //             pos.x_relative = x_r;
+        //             pos.y_relative = y_r;
+        //             pos.z_relative = z_r;
+        //             this->PositionPublisher.publish(pos);
+        //             std::cout << "set relative distance to zero " << z_r << std::endl;
+        //             break;
+
+        //         case 't':
+        //             track = !track;
+        //             if(track) {
+        //                 std::cout << "set uav untrack to target " << track << std::endl;
+        //             }
+        //             else{
+        //                 std::cout << "set uav track to target " << track << std::endl;
+        //             }
+        //             is_track.is_track = track;
+        //             this->TrackPublisher.publish(is_track);
+        //             break;
+        //         /* quadrotor direction */
+
+                    
+        //         case '1':
+        //                 ctr.data  = 0;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "pose 1" << std::endl;
+        //                 break;
+        //         case '2':
+        //                 ctr.data  = 1;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "pose 2" << std::endl;
+        //                 break;
+        //         case '3':
+        //                 ctr.data  = 2;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "pose 3" << std::endl;
+        //                 break;
+        //         case '4':
+        //                 ctr.data  = 3;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "pose 4" << std::endl;
+        //                 break;
+        //         case 'p':
+        //                 ctr.data  = 10;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "thrust compensate" << std::endl;
+        //                 break;
+        //         case 'o':
+        //                 ctr.data  = 11;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "release thrust compensate" << std::endl;
+        //                 break;
+        //         case '5':
+        //                 ctr.data  = 96;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "griper pose 1" << std::endl;
+        //                 break;
+
+        //         case '6':
+        //                 ctr.data  = 97;
+        //                 this->ArmControlPublisher.publish(ctr);
+        //                 std::cout << "griper pose 2" << std::endl;
+        //                 break;
+        //         // case 'w':
+        //         //         ctr.armCtr  = pos2;
+        //         //         ctr.timeCtr = tim2;
+        //         //         ctr.GripSta = 0xff;
+        //         //         this->ArmControlPublisher.publish(ctr);
+        //         //         std::cout << "pose 2" << std::endl;
+        //         //         break;
+        //     //     case 'q':
+        //     //             ctr.armCtr  = motor1;
+        //     //             ctr.timeCtr = tim1;
+        //     //             ctr.GripSta = 0xff;
+        //     //             this->ArmControlPublisher.publish(ctr);
+        //     //             std::cout << "pose 1" << std::endl;
+        //     //             break;
+        //     //     case 'w':
+        //     //             ctr.armCtr  = motor2;
+        //     //             ctr.timeCtr = tim2;
+        //     //             ctr.GripSta = 0xff;
+        //     //             this->ArmControlPublisher.publish(ctr);
+        //     //             std::cout << "pose 2" << std::endl;
+        //     //             break;
+        //     //     case 'e':
+        //     //             ctr.armCtr  = pos3;
+        //     //             ctr.timeCtr = tim3;
+        //     //             ctr.GripSta = 0xff;
+        //     //             this->ArmControlPublisher.publish(ctr);
+        //     //             std::cout << "pose 3" << std::endl;
+        //     //             break;
+        //     //     case 'r':
+        //     //             ctr.armCtr  = pos4;
+        //     //             ctr.timeCtr = tim4;
+        //     //             ctr.GripSta = 0xff;
+        //     //             this->ArmControlPublisher.publish(ctr);
+        //     //             std::cout << "pose 4" << std::endl;
+        //     //             break;
+
+        //     //     case 'b':
+        //     //             gr.GripSta = 0x00;
+        //     //             this->GripperPublisher.publish(gr);
+        //     //             std::cout<<"grasp"<<std::endl;
+        //     //             //std::cout<<"++"<<std::endl;
+        //     //             break;
+        //     //     case 'n':
+        //     //             gr.GripSta = 0x01;
+        //     //             this->GripperPublisher.publish(gr);
+        //     //             std::cout<<"loose"<<std::endl;
+        //     //             //std::cout<<"--"<<std::endl;
+        //     //             break;
+
+        //     //     case 'm':
+        //     //             gr.GripSta = 0xff;
+        //     //             this->GripperPublisher.publish(gr);
+        //     //             std::cout<<"stop"<<std::endl;
+        //     //             break;
         
-        // std::stringstream ss;
-        // ss<<"mission";
-        // msg.data = ss.str();
-        char k = (char)cv::waitKey(1);
+        //     //     case 'l':
+        //     //             gr.GripSta = 0x03;
+        //     //             this->GripperPublisher.publish(gr);
+        //     //             std::cout << "land" << std::endl;
+                            
+
+        //     }
+        //     LoopRate.sleep();
+        // }
+    /*using simple method ( getchar() )*/ 
+    system("stty -icanon");    //关闭命令行输入缓存，确保每次只读取一个字符
+    while(ros::ok()){
+        char k = getchar();
         std_msgs::Char msg;
         msg.data = k;
         switch(k){
@@ -99,7 +308,7 @@ void arm_test::armtestNode::PanelThread(){
                 pos.y_relative = y_r;
                 pos.z_relative = z_r;
                 this->PositionPublisher.publish(pos);
-                std::cout << "y++: " << y_r << std::endl;
+                std::cout << "  means y++: " << y_r << std::endl;
                 break; 
             
             case 's':
@@ -108,7 +317,7 @@ void arm_test::armtestNode::PanelThread(){
                 pos.y_relative = y_r;
                 pos.z_relative = z_r;
                 this->PositionPublisher.publish(pos);
-                std::cout << "y--: " << y_r << std::endl;
+                std::cout << "  means y--: " << y_r << std::endl;
                 break;
             
             case 'd':
@@ -117,7 +326,7 @@ void arm_test::armtestNode::PanelThread(){
                 pos.y_relative = y_r;
                 pos.z_relative = z_r;
                 this->PositionPublisher.publish(pos);
-                std::cout << "x++: " << x_r << std::endl;
+                std::cout << "  means x++: " << x_r << std::endl;
                 break; 
              
             case 'a':
@@ -126,7 +335,7 @@ void arm_test::armtestNode::PanelThread(){
                 pos.y_relative = y_r;
                 pos.z_relative = z_r;
                 this->PositionPublisher.publish(pos);
-                std::cout << "x--: " << x_r << std::endl;
+                std::cout << "  means x--: " << x_r << std::endl;
                 break;
             
             case 'q':
@@ -135,7 +344,7 @@ void arm_test::armtestNode::PanelThread(){
                 pos.y_relative = y_r;
                 pos.z_relative = z_r;
                 this->PositionPublisher.publish(pos);
-                std::cout << "z++: " << z_r << std::endl;
+                std::cout << "  means z++: " << z_r << std::endl;
                 break;
             
             case 'e':
@@ -144,7 +353,7 @@ void arm_test::armtestNode::PanelThread(){
                 pos.y_relative = y_r;
                 pos.z_relative = z_r;
                 this->PositionPublisher.publish(pos);
-                std::cout << "z--: " << z_r << std::endl;
+                std::cout << "  means z--: " << z_r << std::endl;
                 break;
             
             case 'g':
@@ -155,16 +364,16 @@ void arm_test::armtestNode::PanelThread(){
                 pos.y_relative = y_r;
                 pos.z_relative = z_r;
                 this->PositionPublisher.publish(pos);
-                std::cout << "set relative distance to zero " << z_r << std::endl;
+                std::cout << "  means set relative distance to zero " << z_r << std::endl;
                 break;
 
             case 't':
                 track = !track;
                 if(track) {
-                    std::cout << "set uav untrack to target " << track << std::endl;
+                    std::cout << "  means set uav untrack to target " << track << std::endl;
                 }
                 else{
-                    std::cout << "set uav track to target " << track << std::endl;
+                    std::cout << "  means set uav track to target " << track << std::endl;
                 }
                 is_track.is_track = track;
                 this->TrackPublisher.publish(is_track);
@@ -175,78 +384,78 @@ void arm_test::armtestNode::PanelThread(){
             case '1':
                     ctr.data  = 0;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "pose 1" << std::endl;
+                    std::cout << "  means pose 1" << std::endl;
                     break;
             case '2':
                     ctr.data  = 1;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "pose 2" << std::endl;
+                    std::cout << "  means pose 2" << std::endl;
                     break;
             case '3':
                     ctr.data  = 2;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "pose 3" << std::endl;
+                    std::cout << "  means pose 3" << std::endl;
                     break;
             case '4':
                     ctr.data  = 3;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "pose 4" << std::endl;
+                    std::cout << "  means pose 4" << std::endl;
                     break;
             case 'p':
                     ctr.data  = 10;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "thrust compensate" << std::endl;
+                    std::cout << "  means thrust compensate" << std::endl;
                     break;
             case 'o':
                     ctr.data  = 11;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "release thrust compensate" << std::endl;
+                    std::cout << "  means release thrust compensate" << std::endl;
                     break;
             case '5':
                     ctr.data  = 96;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "griper pose 1" << std::endl;
+                    std::cout << "  means griper pose 1" << std::endl;
                     break;
 
             case '6':
                     ctr.data  = 97;
                     this->ArmControlPublisher.publish(ctr);
-                    std::cout << "griper pose 2" << std::endl;
+                    std::cout << "  means griper pose 2" << std::endl;
                     break;
             // case 'w':
             //         ctr.armCtr  = pos2;
             //         ctr.timeCtr = tim2;
             //         ctr.GripSta = 0xff;
             //         this->ArmControlPublisher.publish(ctr);
-            //         std::cout << "pose 2" << std::endl;
+            //         std::cout << "  means pose 2" << std::endl;
             //         break;
         //     case 'q':
         //             ctr.armCtr  = motor1;
         //             ctr.timeCtr = tim1;
         //             ctr.GripSta = 0xff;
         //             this->ArmControlPublisher.publish(ctr);
-        //             std::cout << "pose 1" << std::endl;
+        //             std::cout << "  means pose 1" << std::endl;
         //             break;
         //     case 'w':
         //             ctr.armCtr  = motor2;
         //             ctr.timeCtr = tim2;
         //             ctr.GripSta = 0xff;
         //             this->ArmControlPublisher.publish(ctr);
-        //             std::cout << "pose 2" << std::endl;
+        //             std::cout << "  means pose 2" << std::endl;
         //             break;
         //     case 'e':
         //             ctr.armCtr  = pos3;
         //             ctr.timeCtr = tim3;
         //             ctr.GripSta = 0xff;
         //             this->ArmControlPublisher.publish(ctr);
-        //             std::cout << "pose 3" << std::endl;
+        //             std::cout << "  means pose 3" << std::endl;
         //             break;
         //     case 'r':
         //             ctr.armCtr  = pos4;
         //             ctr.timeCtr = tim4;
         //             ctr.GripSta = 0xff;
         //             this->ArmControlPublisher.publish(ctr);
-        //             std::cout << "pose 4" << std::endl;
+        //             std::cout << "  means pose 4" << std::endl;
         //             break;
 
         //     case 'b':
@@ -271,10 +480,16 @@ void arm_test::armtestNode::PanelThread(){
         //     case 'l':
         //             gr.GripSta = 0x03;
         //             this->GripperPublisher.publish(gr);
-        //             std::cout << "land" << std::endl;
-                        
+        //             std::cout << "  means land" << std::endl;
+        default:
+        {
+            ROS_WARN("no such cmd, try again!");
+            break;
+        }                       
 
         }
         LoopRate.sleep();
     }
+    system("stty icanon");
+    
 }
