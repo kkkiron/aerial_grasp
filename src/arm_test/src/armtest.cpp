@@ -33,7 +33,6 @@ void arm_test::armtestNode::PanelThread(){
     // const std::vector<uint16_t> pos1 {0,  20,  243,   31,   80,  468};
     // const std::vector<uint16_t> tim1 {0,  2000,  2000,  2000,  2000,  2000};
 
-
     // const std::vector<uint16_t> pos2 {0,  800,  654,  432,  394,  468};
     // const std::vector<uint16_t> tim2 {0,  2000,  2000,  2000,  2000,  2000};
     //  以上是LX15D机械臂位置
